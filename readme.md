@@ -22,3 +22,8 @@ Roadmap:
     - Envio ao restaurante quando um pedido for feito
     - Separar a aplicação em microserviços
     
+
+Como rodar o projeto:
+    - Clone o repositório
+    - Dê npm install para instalar as dependências
+    - Utilize o comando npm run dev
