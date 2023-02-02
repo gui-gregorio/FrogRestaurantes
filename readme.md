@@ -1,4 +1,4 @@
-##API feita para estudos, simula uma API feita para ser utilizada por restaurante/lanchonete, utilizando NodeJS junto com Fastify, Bcrypt, Zod e Prisma.
+API feita para estudos, simula uma API feita para ser utilizada por restaurante/lanchonete, utilizando NodeJS junto com Fastify, Bcrypt, Zod e Prisma.
 
 O que está funcional:
     - Cadastro de clientes criptografando as senhas no BD

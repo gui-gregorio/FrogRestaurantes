@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { string, z } from 'zod'
+import { string, z, ZodSchema } from 'zod'
 import { encryptPass } from "./utils/encrypt";
 import { prisma } from "./lib/prisma"
 
@@ -20,9 +20,25 @@ export async function appRoutes(app: FastifyInstance){
             name: z.string(),
             cpf: z.string().min(14).max(15),
             email: z.string().email(),
-            password: z.string()
+            password: z.string(),
+            addresses: z.array(z.object({
+                street: z.string(),
+                city: z.string(),
+                state: z.string(),
+                zipCode: z.string()
+            }))
         })
-        var user = userSchema.parse(req.body)
+        // console.log(req.body)
+        try{
+            var user = userSchema.parse(req.body)
+
+        } catch (error){
+            res.statusCode = 400
+            res.send({error: "Bad Request", message: error.message})
+            return
+        }
+        
+        console.log(user.addresses)
         const encryptedPass = await encryptPass(user.password)
         const existingCpf = await prisma.user.findUnique({
             where: {
@@ -47,10 +63,19 @@ export async function appRoutes(app: FastifyInstance){
                 name: user.name,
                 cpf: user.cpf,
                 email: user.email,
-                password: encryptedPass
-            }
-        })
-        console.log(req.body)
+                password: encryptedPass,
+                    address: {
+                        create: user.addresses.map(address => ({
+                            street: address.street,
+                            city: address.city,
+                            state: address.state,
+                            zipCode: address.zipCode 
+                        }))
+                    }
+                    
+                
+        }})
+        console.log(user)
         res.statusCode = 200
         res.send("User registrated with success")
     })
