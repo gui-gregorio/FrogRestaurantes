@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { string, z, ZodSchema } from 'zod'
-import { encryptPass } from "./utils/encrypt";
+import { encryptPass, comparePass } from "./utils/encrypt";
 import { prisma } from "./lib/prisma"
 
 
@@ -28,7 +28,6 @@ export async function appRoutes(app: FastifyInstance){
                 zipCode: z.string()
             }))
         })
-        // console.log(req.body)
         try{
             var user = userSchema.parse(req.body)
 
@@ -78,5 +77,31 @@ export async function appRoutes(app: FastifyInstance){
         console.log(user)
         res.statusCode = 200
         res.send("User registrated with success")
+    })
+
+
+    app.post('/login', async(req, res) => {
+        const userSchema = z.object({
+            email: z.string().email(),
+            password: z.string()
+        })
+
+        var user = userSchema.parse(req.body)
+
+
+            const checkEmail = await prisma.user.findUnique({
+                where: {
+                    email: user.email
+                }
+        })
+        if (checkEmail){
+            const verifyPass = await comparePass(user.password, checkEmail.password)
+            if(verifyPass){
+                res.statusCode = 200
+                res.send({message: "Usuário logado com sucesso"})
+            }
+        }
+
+
     })
 }

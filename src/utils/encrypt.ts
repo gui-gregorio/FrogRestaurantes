@@ -7,3 +7,7 @@ export async function encryptPass(pass:string) {
 }
 
 
+export async function comparePass(pass: string, dbPass: string){
+    const passCheck = bcrypt.compare(pass, dbPass)
+    return passCheck
+}
